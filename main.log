@@ -1,0 +1,6 @@
+DEBUG:root:get_weather zipCode = 72712
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): api.wunderground.com
+DEBUG:urllib3.connectionpool:http://api.wunderground.com:80 "GET /api/7d65568686ff9c25/geolookup/conditions/hourly/q/72712.json HTTP/1.1" 200 4812
+DEBUG:root:get_weather zipCode = 72712
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): api.wunderground.com
+DEBUG:urllib3.connectionpool:http://api.wunderground.com:80 "GET /api/7d65568686ff9c25/geolookup/conditions/hourly/q/72712.json HTTP/1.1" 200 4812

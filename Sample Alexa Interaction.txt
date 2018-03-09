@@ -1,0 +1,24 @@
+Alexa Conversations;
+
+    M: Hey Alexa, What should I wear cycling today (tommorrow)?
+    M (BONUS - OUTSIDE OF CURRENT LOCALE): In Gentry?
+    A: Okay, I'll check.  What time are you riding?
+    
+    M: Now (in 2 hours, at 7am)
+    
+    A: Checking...
+    
+    A: It looks like it is going to be warm (cold, frigid, chilly, hot, mild, super hot)
+    A:  I suggest you wear .....
+    A:  Of course, ALWAYS wear .... (helmet / sunscreen)
+    A: Since it might be WINDY/RAINY you may want to consider a jacket
+    A: Since it is going to be OVERCAST you should consider taking YELLOW or CLEAR glasses
+    A: Since it is going to be SUNNY, make sure to take darker SUNGLASSES
+    A: Would you like the weather forecast?
+
+    BONUS - Forecast for the the ride duration
+    A : How long will you be riding it looks like there may be rain in forecast?
+    ME : 2 hours
+    A : You should be okay, there is a 40% chance of rain starting at 4pm.
+    A : You may want to consider taking a rain jacket then as there is a > 40% chance of rain at (10am)
+    

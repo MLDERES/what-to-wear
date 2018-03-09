@@ -1,0 +1,154 @@
+{ "road cycling" :
+    {
+        "always": 
+            { 
+                "head":"helmet",
+                "all": "sunscreen"
+            },
+        "cold":
+            { 
+                "head":["insulated skullcap","ear"],
+                "face":"balaclava",
+                "upper_body":"long sleeve baselayer",
+                "arms":"long sleeve jersey",
+                "hands":"insulated gloves",
+                "legs":"insulated bibs",
+                "feet":["shoe covers","boots"],
+                "feet2":"insulated socks"                    
+            },    
+        "cool":
+            {
+                "head":["skullcap","ear cover"],
+                "face":"",
+                "upper_body":"long sleeve baselayer",
+                "arms":"long sleeve jersey",
+                "hands":"full finger gloves",
+                "legs":"insulated bibs",
+                "feet":["toe covers","insulated socks"]
+            },  
+        "mild":
+            {
+                "head":"",
+                "upper_body":"short sleeve baselayer",
+                "arms":"arm warmers",
+                "hands":"half fingered gloves",
+                "lower_body":["knickers","short bibs"],
+                "legs":["leg warmers"],
+                "feet":"long socks"
+            },
+        "warm":
+            {
+                "head":"",
+                "upper_body":"short-sleeve jersey",
+                "arms":"",
+                "hands":"half fingered gloves",
+                "lower_body":"short bibs",
+                "legs":"",
+                "feet":"short socks"
+            },
+        "very warm":
+            {
+                "head":"",
+                "upper_body":["short-sleeve jersey","sleeveless jersey"],
+                "arms":"",
+                "hands":"half-fingered gloves",
+                "lower_body":"short bibs",
+                "legs":"",
+                "feet":"short socks"
+            },
+        "hot":
+            {
+                "head":"",
+                "upper_body":"sleeveless jersey",
+                "arms":"",
+                "hands":"half-fingered gloves",
+                "lower_body":"short bibs",
+                "legs":"",
+                "feet":"short socks"
+            },
+        "sunny":
+            {
+                "face":"sunglasses"
+            },
+        "cloudy":
+            {
+                "face":"yellow to clear sunglasses"
+            }
+    },
+"road running" :
+    {
+        "always": 
+            { 
+                "all": "sunscreen"
+            },
+        "cold":
+            { 
+                "head":"warm hat",
+                "face":"balaclava",
+                "upper_body":"",
+                "arms":"",
+                "hands":"",
+                "lower_body":"",
+                "legs":"",
+                "feet":""                    
+            },    
+        "cool":
+            {
+                "head":"skullcap or earcovers",
+                "upper_body":"",
+                "arms":"",
+                "hands":"",
+                "lower_body":"",
+                "legs":"",
+                "feet":""
+            },  
+        "mild":
+            {
+                "head":"skullcap or ear",
+                "upper_body":"",
+                "arms":"",
+                "hands":"",
+                "lower_body":"",
+                "legs":"",
+                "feet":""
+            },
+        "warm":
+            {
+                "head":"skullcap or ear",
+                "upper_body":"",
+                "arms":"",
+                "hands":"",
+                "lower_body":"",
+                "legs":"",
+                "feet":""
+            },
+        "very warm":
+            {
+                "head":"skullcap or ear",
+                "upper_body":"",
+                "arms":"",
+                "hands":"",
+                "lower_body":"",
+                "legs":"",
+                "feet":""
+            },
+        "hot":
+            {
+                "head":"",
+                "upper_body":"",
+                "arms":"",
+                "hands":"",
+                "lower_body":"",
+                "legs":"",
+                "feet":""
+            },
+        "sunny":
+            {
+                "face":"sunglasses"
+            },
+        "cloudy":
+            {
+                "face":"yellow to clear sunglasses"
+            }
+    }
+}
