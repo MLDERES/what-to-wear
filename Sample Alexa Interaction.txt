@@ -1,6 +1,6 @@
 Alexa Conversations;
 
-    M: Hey Alexa, What should I wear cycling today (tommorrow)?
+    M: Hey Alexa, what to wear how to dress for a bike ride today (tommorrow)?
     M (BONUS - OUTSIDE OF CURRENT LOCALE): In Gentry?
     A: Okay, I'll check.  What time are you riding?
     
