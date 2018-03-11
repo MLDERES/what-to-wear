@@ -8,15 +8,20 @@ class base(object):
 class derived(base):
     _some_var = 'derived class'
 
-class clothing_option(json.decoder):
+messages = {
+    'SKILL_NAME' : "What to wear outside",
+    'HELP_MESSAGE': "Help",
+    'STOP_MESSAGE': "Stop",
+    'FINISHED_MESSSAGE':"Finished",
+    'WELCOME_MESSAGE':"Welcome"
+}
 
-    def __init__()
+def message(msg_key):
+    return messages[msg_key]
 
 def main():
-    b = base()
-    d = derived()
-    b.get_some()
-    d.get_some()
+    print (message("SKILL_NAME"))
+    print (message("HELP_MESSAGE"))
 
 if __name__ == '__main__':
     main()
