@@ -22,3 +22,5 @@ Alexa Conversations;
     A : You should be okay, there is a 40% chance of rain starting at 4pm.
     A : You may want to consider taking a rain jacket then as there is a > 40% chance of rain at (10am)
     
+
+  Alexa, ask what to wear how to dress for cycling on {WhenDate} {WhatTime} in {Where}

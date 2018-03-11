@@ -42,7 +42,6 @@ def get_weather(zipCode='72712', dbg=False):
             # #print ("Current temperature in %s is: %s".format(location, temp_f))
         f.close()
         return ob
-      
 
 class TestRunner(unittest.TestCase):
     

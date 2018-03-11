@@ -3,6 +3,7 @@ import json
 import logging
 from pprint import pprint
 import random
+from weather_observation import Observation
 
 class clothing_option(object):
     """ Base class for different activity options.
@@ -65,9 +66,9 @@ class clothing_option(object):
             raise(NotImplementedError()) 
         self._configuration = config[self._clothing_key]
         
-        logging.debug(PrettyPrinter.format(self._configurationcon))
+       # logging.debug(PrettyPrinter.format(self._configurationcon))
         # Load up the always part
-        self.assertEqual({'all': 'sunscreen', 'head': 'helmet'},t_option._configuration["always"])
+        #self.assertEqual({'all': 'sunscreen', 'head': 'helmet'},t_option._configuration["always"])
 
     def get_outfit(self, source, temp_f, conditions=None):
         """ This function will return the outfit to suggest, given the temperature and any weather conditions
@@ -80,28 +81,33 @@ class clothing_option(object):
         self._condition_temp = self.get_condition_for_temp(temp_f)
         
     def build_alexa_reply_main(self):
-        [reply += " " + alexa_reply(k) for k in ]
+        #[reply += " " + alexa_reply(k) for k in ]
+        return ("")
+    
+    def build_alexa_always_reply(self):
+        return ("")
 
-    def get_alexa_reply(self):
+    def get_alexa_reply(self, weather_observation):
         # Here's where we are going to build Alexa's reply
         ##  A: It looks like it is going to be warm (cold, frigid, chilly, hot, mild, super hot)
-        reply_temperature = alexa_initial_prefix + _condition_temp
-        reply_clothing = alexa_clothing_prefix + self.build_alexa_reply_main()
-        reply_always = alexa_always_prefix + self.build_alexa_always_reply()
+        self.get_outfit("",weather_observation.feels_like_f)
+        reply_temperature = self.alexa_initial_prefix + self._condition_temp
+        reply_clothing = self.alexa_clothing_prefix + self.build_alexa_reply_main()
+        reply_always = self.alexa_always_prefix + self.build_alexa_always_reply()
+        return reply_temperature, reply_clothing, reply_always
 
     # These are defined as propeties so that they could be overridden in subclasses if desired
-    @property()
+    @property
     def alexa_initial_prefix(self): 
-         
         return random.choice(self._alexa_prefixes["initial"]) + "it is going to be "
 
-    @property()
+    @property
     def alexa_clothing_prefix(self):
         # For example
         # A:  I suggest you wear .....
         return random.choice(self._alexa_prefixes["clothing"])
 
-    @property()
+    @property
     def alexa_always_prefix(self):
         # For example
         #  A:  Of course, ALWAYS wear .... (helmet / sunscreen)
@@ -121,6 +127,7 @@ class road_cycling(clothing_option):
 ################################################
 class clothing_option_tester(unittest.TestCase):
 
+    @unittest.skip('Not ready to test')
     def test_load_json(self):
         t_option = road_cycling   
         with open('clothing_options.json') as fStream:
@@ -129,6 +136,7 @@ class clothing_option_tester(unittest.TestCase):
         # Load up the always part
         self.assertEqual({'all': 'sunscreen', 'head': 'helmet'},t_option._configuration["always"])
 
+    @unittest.skip('Not ready to test')
     def test_get_condition_for_temp(self):
         t_option = road_cycling
         with open('clothing_options.json') as fStream:
@@ -136,9 +144,11 @@ class clothing_option_tester(unittest.TestCase):
         # Load up the always part
         self.assertEqual({'all': 'sunscreen', 'head': 'helmet'},t_option._configuration["always"])
 
-
-def main():
-    unittest.main(verbosity=0)
+    def test_get_alexa_reply(self):
+        wo = Observation(temp_f=55, ws=10, wdir="SE", heat_index=56)
+        road = road_cycling()
+        msg = road.get_alexa_reply(wo)
+        pprint(msg)
 
 if __name__ == '__main__':
-    main()
+    unittest.main(verbosity=0)

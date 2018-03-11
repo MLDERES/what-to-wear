@@ -7,6 +7,7 @@ import requests
 import time
 import unidecode
 import weather_observation
+import clothing_options
 
 SPEECHOUTPUT_KEY = "speechOutput"
 REPROMPT_KEY = "repromptText"
@@ -43,6 +44,8 @@ def what_to_wear_cycling(city,dt, t):
         city = get_location()
     
     ob = weather_observation.get_weather(city)
+    road_cycle = clothing_options.road_cycling()
+    road_cycle.get_alexa_reply(ob)
     return statement(ob)
     
 
