@@ -4,6 +4,22 @@ import unittest
 import logging
 import requests
 import datetime
+from beaker.cache import CacheManager
+from beaker.util import parse_cache_config_options
+
+cache_opts = {
+    'cache.type': 'file',
+    'cache.data_dir': '/temp/cache/data',
+    'cache.lock_dir': '/temp/cache/lock'
+}
+
+cache = CacheManager(**parse_cache_config_options(cache_opts))
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+logger.addHandler(ch)
 
 WU_API_KEY = '7d65568686ff9c25'
 # So lets just key our observations off of mon_day_year
@@ -30,17 +46,6 @@ WIND_SPEED_KEY = 'wspd' # also read dictionary of 'english' or 'metric'
 RAIN_CHANCE_KEY = 'pop' # probability of precipitation
 NULL_VALUE = -999
 
-class Observation ():
-    
-    def __init__(self, temp_f, ws, wdir, heat_index):
-        self.feels_like_f = temp_f
-        self.wind_speed = ws
-        self.wind_direction = wdir
-        self.heat_index_f = heat_index
-
-    def __str__(self):
-        return "Feels like {}.\n Windspeed: {}\n Direction: {}\nHeat Index: {}".format(self.feels_like_f, self.wind_speed, self.wind_direction, self.heat_index_f)
-
 class Forecast():
     def __init__(self):
         super(Forecast,self).__init__()
@@ -57,13 +62,13 @@ class Forecast():
         self.mth = 1
 
     def __str__(self):
-        return "Forecast for {} {}. Temp:{} Condition:{} POP: {}".format(self.feels_like_f, self.condition, self.precip_chance)
+        return "Forecast for {}-{} time of day {}00. Temp:{} Condition:{} POP: {}".format(self.mth,self.month_day,self.tod,self.feels_like_f, self.condition, self.precip_chance)
 
-    def get_fct_key(d=0,m=0,h=0):
-        return "{}_{}_{}".format(h,d,m)
+    def get_fct_key(month_day=0,month_num=0,hour_of_day=0):
+        return "{}_{}_{}".format(month_day,month_num,hour_of_day)
 
 
-def get_forecasts(dct):
+def _build_forecasts(dct):
     forecasts = {}
     def read_int(i):
         return None if int(i) <= NULL_VALUE else int(i)
@@ -71,9 +76,9 @@ def get_forecasts(dct):
     if FORECAST_KEY in dct:
         for f in dct[FORECAST_KEY]:
             time_dct = f[FCAST_TIME_KEY]
-            f_key =Forecast.get_fct_key(d = read_int(time_dct[DATE_DAY]),
-                                        m = read_int(time_dct[DATE_MONTH]),
-                                        h = read_int(time_dct[DATE_HOUR]))
+            f_key =Forecast.get_fct_key(month_day = read_int(time_dct[DATE_DAY]),
+                                        month_num = read_int(time_dct[DATE_MONTH]),
+                                        hour_of_day = read_int(time_dct[DATE_HOUR]))
             fcast = Forecast()
             fcast.tod = read_int(time_dct[DATE_HOUR])
             fcast.mth = read_int(time_dct[DATE_MONTH])
@@ -90,33 +95,25 @@ def get_forecasts(dct):
         return forecasts
     return dct
 
+@cache.cache("get_weather",expire=7200)
+def get_weather(dt, tod, location='72712',dbg=False):
+    forecasts = _fill_forecast(location)
+    if(forecasts is None):
+        logger.error("Unable to get forecast for location: {}".format(location))
+    query_date = dt
+    forecast_key = Forecast.get_fct_key(month_day=query_date.day,month_num=query_date.month,hour_of_day=tod)
+    return forecasts[forecast_key]
 
-
-def get_observation(dct):
-    if 'current_observation' in dct:
-        #logging.debug(pprint(current_ob))
-        current_ob = dct["current_observation"]
-        #pprint(current_ob)
-        return Observation(current_ob['feelslike_f'],current_ob['wind_mph'],current_ob['wind_dir'],current_ob['heat_index_f'])
-    return dct
-
-def get_weather(dt, location='72712',dbg=False):
-        forecasts = None 
-        # dt should be the date and the time
-        if dbg:
-            with open('forecast.json') as f:
-                wu_response = json.load(f)       
-        else:
-            logging.debug('get_weather location = '+ location)
-            logging.debug('date time = {}'.format(dt))
-            
-            request = _build_weather_request(location) #+'/geolookup/conditions/hourly/q/'+city+'.json'
-            with requests.get(request) as f:
-                #TODO: I'm going to want to cache the response once I create the object with just the fields I need
-                print(f.text,"c:/temp/weather.json")
-                wu_response = json.loads(f.text)
-        forecasts = get_forecasts(wu_response)
-        return forecasts
+@cache.cache(expire=7200)
+def _fill_forecast(location):
+    logger.debug('_fill_forecast = '+ location)
+    request = _build_weather_request(location) #+'/geolookup/conditions/hourly/q/'+city+'.json'
+    with requests.get(request) as f:
+        logger.debug("Response from WU")
+        logger.debug(f.text)
+        wu_response = json.loads(f.text)
+    forecasts = _build_forecasts(wu_response)
+    return forecasts
 
 def _build_weather_request(location):
     #http://api.wunderground.com/api/7d65568686ff9c25/features/settings/q/query.format
@@ -136,17 +133,18 @@ class TestRunner(unittest.TestCase):
         super(TestRunner,self).__init__(test)
     def setUp(self):
          # Any setup code required to run the tests
+        self.oneday = datetime.timedelta(days=1)
         pass
 
     @unittest.skip('Not ready to test the web part yet')
     def test_fromFile(self):
-        ob = get_weather(datetime.date.today,dbg=True)
+        ob = get_weather(datetime.date.today()+self.oneday,16,dbg=True)
         print(ob)
         self.assertTrue(ob is not None)
 
     #unittest.skip('Not ready to test the web part yet')
     def test_fromWeb(self):
-        ob = get_weather(datetime.date.today,dbg=False)
+        ob = get_weather(datetime.date.today()+self.oneday,17,dbg=False)
         print(ob)
         self.assertTrue(True)
 

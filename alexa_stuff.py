@@ -1,18 +1,19 @@
-import logging
-from random import randint
-from flask import Flask, render_template
-from flask_ask import Ask, statement, question, session, version, convert_errors, request
-import json
-import requests
-import time
-import weather_observation
-import clothing_options
 import datetime
+import json
+import logging
+import time
 from pprint import pprint
+from random import randint
 
+import requests
+from diskcache import Cache
+from flask import Flask, render_template
+from flask_ask import (Ask, convert_errors, question, request, session,
+                       statement, version)
 
-SPEECHOUTPUT_KEY = "speechOutput"
-REPROMPT_KEY = "repromptText"
+import clothing_options
+import weather_observation
+
 POSTAL_CODE = "postal"
 LOCALE = "locale"
 GET_ADDRESS = "GetAddress"
@@ -23,6 +24,7 @@ IN_PROGRESS = "in progress"
 COMPLETED = 'completed'
 
 app = Flask(__name__)
+
 # This defines the endpoint where to get to the handler
 ask = Ask(app, "/")
 
@@ -56,7 +58,7 @@ def what_to_wear_cycling(city,dt, t):
     
     logger.debug("Got a city {}".format(city))
     
-    ob = weather_observation.get_weather(city)
+    forecast = weather_observation.get_weather(dt,t,city)
     road_cycle = clothing_options.road_cycling()
     alexa_reply = road_cycle.get_alexa_reply(ob)
     return statement(alexa_reply)
