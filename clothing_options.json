@@ -7,10 +7,9 @@
             },
         "cold":
             { 
-                "head":["insulated skullcap","ear"],
-                "face":"balaclava",
-                "upper_body":"long sleeve baselayer",
-                "arms":"long sleeve jersey",
+                "head":["an insulated skullcap","ear covers","a balaclava"],
+                "upper_body":"a long sleeve baselayer",
+                "arms":"a long sleeve jersey",
                 "hands":"insulated gloves",
                 "legs":"insulated bibs",
                 "feet":["shoe covers","boots"],
@@ -18,28 +17,26 @@
             },    
         "cool":
             {
-                "head":["skullcap","ear cover"],
-                "face":"",
-                "upper_body":"long sleeve baselayer",
-                "arms":"long sleeve jersey",
+                "head":["a skullcap","ear covers"],
+                "upper_body":"a long sleeve baselayer",
+                "arms":"a long sleeve jersey",
                 "hands":"full finger gloves",
                 "legs":"insulated bibs",
                 "feet":["toe covers","insulated socks"]
             },  
         "mild":
             {
-                "head":"",
-                "upper_body":"short sleeve baselayer",
+                "upper_body":"a short sleeve baselayer",
                 "arms":"arm warmers",
                 "hands":"half fingered gloves",
                 "lower_body":["knickers","short bibs"],
-                "legs":["leg warmers"],
+                "legs":"leg warmers",
                 "feet":"long socks"
             },
         "warm":
             {
                 "head":"",
-                "upper_body":"short-sleeve jersey",
+                "upper_body":"a short-sleeve jersey",
                 "arms":"",
                 "hands":"half fingered gloves",
                 "lower_body":"short bibs",
@@ -49,7 +46,7 @@
         "very warm":
             {
                 "head":"",
-                "upper_body":["short-sleeve jersey","sleeveless jersey"],
+                "upper_body":["a short-sleeve jersey","a sleeveless jersey"],
                 "arms":"",
                 "hands":"half-fingered gloves",
                 "lower_body":"short bibs",
@@ -59,7 +56,7 @@
         "hot":
             {
                 "head":"",
-                "upper_body":"sleeveless jersey",
+                "upper_body":"a sleeveless jersey",
                 "arms":"",
                 "hands":"half-fingered gloves",
                 "lower_body":"short bibs",

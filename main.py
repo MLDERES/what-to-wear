@@ -2,7 +2,7 @@ import unittest
 import requests
 import json
 import logging
-from weather_observation import observation
+from weather_observation import Observation, get_weather
 
 logger = logging.getLogger("what_to_wear")
 logger.setLevel(logging.DEBUG)
@@ -25,7 +25,7 @@ def make_the_call(self, location, clothing_type="cycling"):
     # Get the weather
     # Create the right clothing option class
     # Return the Alexa response 
-    ob = observation.get_weather(location)
+    ob = get_weather(location)
 
 
 class TestAlexaReponse(unittest.TestCase):
