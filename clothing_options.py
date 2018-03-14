@@ -3,7 +3,7 @@ import json
 import logging
 from pprint import pprint
 import random
-from weather_observation import Observation
+from weather_observation import Forecast
 
 class clothing_option(object):
     """ Base class for different activity options.
@@ -132,10 +132,10 @@ class clothing_option(object):
         return reply_clothing
 
 
-    def get_alexa_reply(self, weather_observation):
+    def get_alexa_reply(self, forecast):
         # Here's where we are going to build Alexa's reply
         ##  A: It looks like it is going to be warm (cold, frigid, chilly, hot, mild, super hot)
-        temp = int(weather_observation.feels_like_f)
+        temp = forecast.feels_like_f
         self._get_outfit(temp)
         reply_temperature = self.alexa_initial_prefix + self._condition_temp + ". {} degrees.".format(temp) 
         if(self._outfit is not None):
@@ -180,9 +180,14 @@ class clothing_option_tester(unittest.TestCase):
 
     unittest.skip('Not ready yet')
     def test_get_alexa_reply(self):
-        wo = Observation(temp_f=55, ws=10, wdir="SE", heat_index=56)
+        fcast = Forecast()
+        fcast.feels_like_f = 56
+        fcast.precip_chance = 10
+        fcast.wind_dir = "NNE"
+        fcast.wind_speed = 3
+        fcast.condition = 'Sunny'
         road = road_cycling()
-        msg = road.get_alexa_reply(wo)
+        msg = road.get_alexa_reply(fcast)
         pprint(msg)
 
     def test_build_response(self):

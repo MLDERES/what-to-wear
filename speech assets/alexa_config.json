@@ -1,0 +1,226 @@
+{
+    "languageModel": {
+        "invocationName": "what to wear",
+        "intents": [
+            {
+                "name": "AMAZON.CancelIntent",
+                "slots": [],
+                "samples": [
+                    "Stop",
+                    "Cancel",
+                    "Got it"
+                ]
+            },
+            {
+                "name": "AMAZON.HelpIntent",
+                "slots": [],
+                "samples": [
+                    "help"
+                ]
+            },
+            {
+                "name": "AMAZON.StopIntent",
+                "slots": [],
+                "samples": [
+                    "i'm done",
+                    "got it",
+                    "move on",
+                    "forget it",
+                    "stop"
+                ]
+            },
+            {
+                "name": "WhatToWearCyclingIntent",
+                "slots": [
+                    {
+                        "name": "WhenDate",
+                        "type": "AMAZON.DATE",
+                        "samples": [
+                            "{WhatTime} {WhenDate}",
+                            "{WhenDate} {WhatTime}",
+                            "On {WhenDate}",
+                            "{WhenDate}"
+                        ]
+                    },
+                    {
+                        "name": "WhatTime",
+                        "type": "AMAZON.TIME",
+                        "samples": [
+                            "Wheels up at {WhatTime}",
+                            "{WhatTime} {WhenDate}",
+                            "{WhatTime}"
+                        ]
+                    },
+                    {
+                        "name": "Where",
+                        "type": "AMAZON.US_CITY"
+                    }
+                ],
+                "samples": [
+                    "for biking {WhenDate} {WhatTime}",
+                    "for biking {WhatTime}",
+                    "for biking",
+                    "for a bike ride {WhenDate} {WhatTime}",
+                    "for a bike ride",
+                    "how to dress for cycling on {WhenDate} {WhatTime} in {Where}",
+                    "what should I wear if I'm biking in {Where} {WhenDate} {WhatTime}",
+                    "how should I dress for a bike ride in {Where} {WhatTime} {WhenDate}",
+                    "I'm biking {WhenDate} what should I wear",
+                    "what should I wear for a bike ride {WhenDate}",
+                    "how to dress for cycling {WhenDate}",
+                    "how I should dress to go for a bike ride {WhenDate}"
+                ]
+            },
+            {
+                "name": "WindDirectionIntent",
+                "slots": [
+                    {
+                        "name": "Where",
+                        "type": "AMAZON.US_CITY"
+                    },
+                    {
+                        "name": "when",
+                        "type": "AMAZON.DATE"
+                    }
+                ],
+                "samples": [
+                    "which direction will the wind be coming from {when}",
+                    "what direction will the wind be from in {Where}",
+                    "tell me about the wind in {Where}",
+                    "whats the wind in {Where}",
+                    "which direction is the wind coming from"
+                ]
+            },
+            {
+                "name": "PrecipitationIntent",
+                "slots": [],
+                "samples": []
+            },
+            {
+                "name": "WhatToWearRunningIntent",
+                "slots": [
+                    {
+                        "name": "WhenDate",
+                        "type": "AMAZON.DATE",
+                        "samples": [
+                            "On {WhenDate}",
+                            "{WhenDate}"
+                        ]
+                    },
+                    {
+                        "name": "Where",
+                        "type": "AMAZON.US_CITY"
+                    }
+                ],
+                "samples": [
+                    "how to dress for running on {WhenDate} in {Where}",
+                    "what should I wear if I'm running in {Where} {WhenDate}",
+                    "how should I dress for a run in {Where} {WhenDate}",
+                    "I'm running {WhenDate} what should I wear",
+                    "what should I wear for a run {WhenDate}",
+                    "how to dress for a run {WhenDate}",
+                    "how I should dress to go for a run {WhenDate}"
+                ]
+            },
+            {
+                "name": "WhatToWearGeneral",
+                "slots": [],
+                "samples": []
+            }
+        ],
+        "types": []
+    },
+    "dialog": {
+        "intents": [
+            {
+                "name": "WhatToWearCyclingIntent",
+                "confirmationRequired": false,
+                "prompts": {},
+                "slots": [
+                    {
+                        "name": "WhenDate",
+                        "type": "AMAZON.DATE",
+                        "confirmationRequired": false,
+                        "elicitationRequired": true,
+                        "prompts": {
+                            "elicitation": "Elicit.Slot.929374815058.508500165257"
+                        }
+                    },
+                    {
+                        "name": "WhatTime",
+                        "type": "AMAZON.TIME",
+                        "confirmationRequired": false,
+                        "elicitationRequired": true,
+                        "prompts": {
+                            "elicitation": "Elicit.Slot.535791215449.1062069152471"
+                        }
+                    },
+                    {
+                        "name": "Where",
+                        "type": "AMAZON.US_CITY",
+                        "confirmationRequired": false,
+                        "elicitationRequired": false,
+                        "prompts": {}
+                    }
+                ]
+            }
+        ]
+    },
+    "prompts": [
+        {
+            "id": "Elicit.Slot.929374815058.508500165257",
+            "variations": [
+                {
+                    "type": "PlainText",
+                    "value": "Sweet.  On what day is the ride?"
+                },
+                {
+                    "type": "PlainText",
+                    "value": "When are your going cycling?"
+                }
+            ]
+        },
+        {
+            "id": "Elicit.Slot.929374815058.147643061046",
+            "variations": [
+                {
+                    "type": "PlainText",
+                    "value": "Are you going cycling or running?"
+                },
+                {
+                    "type": "PlainText",
+                    "value": "It's great you're getting outside.  What are you going to do {WhenDate}?"
+                }
+            ]
+        },
+        {
+            "id": "Elicit.Slot.535791215449.1062069152471",
+            "variations": [
+                {
+                    "type": "PlainText",
+                    "value": "What time is wheels up for that ride?"
+                },
+                {
+                    "type": "PlainText",
+                    "value": "What time will your ride head out on {WhenDate}?"
+                },
+                {
+                    "type": "PlainText",
+                    "value": "What time does your ride leave?"
+                },
+                {
+                    "type": "PlainText",
+                    "value": "Sounds like fun.  When you are planning to go for a ride?"
+                },
+                {
+                    "type": "PlainText",
+                    "value": "Super, what time of day are you planning to go?"
+                },
+                {
+                    "type": "PlainText",
+                    "value": "What time are you going to go cycling?"
+                }
+            ]
+        }
+    ]
+}

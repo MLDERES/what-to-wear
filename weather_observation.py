@@ -95,16 +95,20 @@ def _build_forecasts(dct):
         return forecasts
     return dct
 
-@cache.cache("get_weather",expire=7200)
+#@cache.cache("get_weather",expire=7200)
 def get_weather(dt, tod, location='72712',dbg=False):
+    log = logging.getLogger("__main__")
+    log.debug("In get_weather.  dt={} tod={} location={}".format(dt,tod,location))
     forecasts = _fill_forecast(location)
     if(forecasts is None):
-        logger.error("Unable to get forecast for location: {}".format(location))
+        log.error("Unable to get forecast for location: {}".format(location))
     query_date = dt
+    if (tod is None):
+        tod = datetime.time.hour()
     forecast_key = Forecast.get_fct_key(month_day=query_date.day,month_num=query_date.month,hour_of_day=tod)
     return forecasts[forecast_key]
 
-@cache.cache(expire=7200)
+#@cache.cache(expire=7200)
 def _fill_forecast(location):
     logger.debug('_fill_forecast = '+ location)
     request = _build_weather_request(location) #+'/geolookup/conditions/hourly/q/'+city+'.json'
