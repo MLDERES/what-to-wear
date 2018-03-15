@@ -3,9 +3,20 @@ import json
 import logging
 from pprint import pprint
 import random
-from weather_observation import Forecast
+from beaker.cache import CacheManager
+from beaker.util import parse_cache_config_options
+from dateutil import parser
+import datetime
 
-class clothing_option(object):
+cache_opts = {
+    'cache.type': 'file',
+    'cache.data_dir': '/temp/cache/data',
+    'cache.lock_dir': '/temp/cache/lock'
+}
+
+cache = CacheManager(**parse_cache_config_options(cache_opts))
+
+class _clothing_option(object):
     """ Base class for different activity options.
         Reading from JSON, 
     """    
@@ -132,14 +143,14 @@ class clothing_option(object):
         return reply_clothing
 
 
-    def get_alexa_reply(self, forecast):
+    def build_alexa_reply(self, forecast):
         # Here's where we are going to build Alexa's reply
         ##  A: It looks like it is going to be warm (cold, frigid, chilly, hot, mild, super hot)
         temp = forecast.feels_like_f
         self._get_outfit(temp)
         reply_temperature = self.alexa_initial_prefix + self._condition_temp + ". {} degrees.".format(temp) 
         if(self._outfit is not None):
-            reply = reply_temperature + ".,,, " + self._build_alexa_reply_main() + ".,,," + self._build_alexa_always_reply()
+            reply = reply_temperature + ". " + self._build_alexa_reply_main() + ". " + self._build_alexa_always_reply()
         else:
             reply = reply_temperature
             reply += "Unfortunately, I don't know how to tell you to dress for that condition."
@@ -167,53 +178,136 @@ class clothing_option(object):
 # Subclassing clothing option for "road cycling"
 # 
 ################################################
-class road_cycling(clothing_option):    
+class RoadCycling(_clothing_option):    
     ACTIVITY_TYPE_KEY= "road cycling"
     BODY_PARTS_KEYS = ["head","face","upper_body","lower_body","arms","hands","legs","feet"]
 
+_WU_API_KEY = '7d65568686ff9c25'
+# So lets just key our observations off of mon_day_year
+#  We'll store pretty date for whatever reason
+# And for other conditions, we'll take
+FORECAST_KEY = 'hourly_forecast'
+FCAST_TIME_KEY = 'FCTTIME'
+DATE_KEY = 'UTCDATE'
+DATE_HOUR = 'hour'
+DATE_MONTH = 'mon'
+DATE_DAY = 'mday'
+DATE_YEAR = 'year'
 
-################################################
-# Test harness for this module
-# 
-################################################
-class clothing_option_tester(unittest.TestCase):
+CONDITION_KEY = 'condition' # this would be the technical description
+FANCY_COND_KEY = 'wx' # this is the human readable condition
+FEELS_LIKE_KEY = 'feelslike' # then there is a dict of 'english' or 'metric'
+METRIC_KEY = 'metric'
+ENG_KEY = 'english'
+HEAT_IDX_KEY = 'heatindex'
+UV_INDEX_KEY = 'uvi'
+TEMP_KEY = 'temp'
+WIND_DIR_KEY = 'wdir' # but then we need the 'dir' or 'degrees' key to get it
+WIND_SPEED_KEY = 'wspd' # also read dictionary of 'english' or 'metric'
+RAIN_CHANCE_KEY = 'pop' # probability of precipitation
+NULL_VALUE = -999
 
-    unittest.skip('Not ready yet')
-    def test_get_alexa_reply(self):
-        fcast = Forecast()
-        fcast.feels_like_f = 56
-        fcast.precip_chance = 10
-        fcast.wind_dir = "NNE"
-        fcast.wind_speed = 3
-        fcast.condition = 'Sunny'
-        road = road_cycling()
-        msg = road.get_alexa_reply(fcast)
-        pprint(msg)
+class Forecast():
 
-    def test_build_response(self):
-        d = {"head": "",'body': ['long-sleeve baselayer', 'short sleeve jersey']}
+    def __init__(self):
+        super(Forecast,self).__init__()
+        self.condition = ""
+        self.condition_human = ""
+        self.feels_like_f = 0
+        self.heat_index_f = 0
+        self.temp_f = 0
+        self.wind_dir = ''
+        self.wind_speed = 0
+        self.precip_chance = 0
+        self.tod = 0
+        self.month_day = 1
+        self.mth = 1
+
+    def __str__(self):
+        return "Forecast for {}-{} time of day {}00. Temp:{} Condition:{} POP: {}".format(self.mth,self.month_day,self.tod,self.feels_like_f, self.condition, self.precip_chance)
+
+    def gen_fct_key(month_day=0,month_num=0,hour_of_day=0):
+        return "{}_{}_{}".format(month_day,month_num,hour_of_day)
+
+    def _build_forecasts(dct):
+        forecasts = {}
+        def read_int(i):
+            return None if int(i) <= NULL_VALUE else int(i)
         
-        co = clothing_option()
-        reply = co._build_generic_from_dictionary(d)
-        self.assertEqual(reply, "either long-sleeve baselayer or short sleeve jersey")
+        if FORECAST_KEY in dct:
+            for f in dct[FORECAST_KEY]:
+                time_dct = f[FCAST_TIME_KEY]
+                f_key =Forecast.gen_fct_key(month_day = read_int(time_dct[DATE_DAY]),
+                                            month_num = read_int(time_dct[DATE_MONTH]),
+                                            hour_of_day = read_int(time_dct[DATE_HOUR]))
+                fcast = Forecast()
+                fcast.tod = read_int(time_dct[DATE_HOUR])
+                fcast.mth = read_int(time_dct[DATE_MONTH])
+                fcast.month_day = read_int(time_dct[DATE_DAY])
+                fcast.condition = f[CONDITION_KEY]
+                fcast.condition_human = f[FANCY_COND_KEY] 
+                fcast.feels_like_f = read_int(f[FEELS_LIKE_KEY][ENG_KEY])
+                fcast.heat_index_f = read_int(f[HEAT_IDX_KEY][ENG_KEY])
+                fcast.temp_f = read_int(f[TEMP_KEY][ENG_KEY])
+                fcast.wind_dir = f[WIND_DIR_KEY]['dir']
+                fcast.wind_speed = read_int(f[WIND_SPEED_KEY][ENG_KEY])
+                fcast.precip_chance = read_int(f[RAIN_CHANCE_KEY])
+                forecasts[f_key]=fcast 
+            return forecasts
+        return dct
 
-        d["lower_body"]="long pants"
-        reply = co._build_generic_from_dictionary(d)
-        self.assertEqual(reply, "either long-sleeve baselayer or short sleeve jersey and also long pants")
+    #@cache.cache(expire=7200)
+    @classmethod
+    def find_weather(location, forecast_date, time_of_day,dbg=False):
+        log.debug("In get_weather.  dt={} tod={} location={}".format(forecast_date,time_of_day,location))
+        
+        if(not (type(forecast_date) is datetime.date)):
+            query_date = parser.parse(forecast_date).date
+        else:
+            query_date = forecast_date
 
-        d["legs"]="long socks"
-        d["something"]="toe covers"
-        reply = co._build_generic_from_dictionary(d)
-        self.assertEqual(reply, "either long-sleeve baselayer or short sleeve jersey and also long pants,long socks and toe covers")
+        forecasts = Forecast._fill_forecast(location)
+        if(forecasts is None):
+            log.error("Unable to get forecast for location: {}".format(location))
+        
+        if (not (type(time_of_day) is datetime.time)):
+            tod = int(time_of_day)
+            if( tod > 23 or tod < 0):
+                raise ValueError("time_of_day should be either a datetime.time object or an integer between 0 and 23")
+            else:
+                tod = time_of_day.hour
+                
+        forecast_key = Forecast.get_fct_key(month_day=query_date.day,month_num=query_date.month,hour_of_day=tod)
+        return forecasts[forecast_key]
 
-        d["s2"]=["shoes","laces"]
-        reply = co._build_generic_from_dictionary(d)
-        print (reply)
-        self.assertEqual(reply, "either long-sleeve baselayer or short sleeve jersey and also"+
-                    " long pants,long socks,toe covers and either shoes or laces")
+    @cache.cache(expire=7200)
+    def _fill_forecast(location):
+        logger.debug('_fill_forecast = '+ location)
+        request = _build_weather_request(location) #+'/geolookup/conditions/hourly/q/'+city+'.json'
+        with requests.get(request) as f:
+            logger.debug("Response from WU")
+            logger.debug(f.text)
+            wu_response = json.loads(f.text)
+        forecasts = _build_forecasts(wu_response)
+        return forecasts
+
+    @classmethod()
+    def _build_weather_request(location):
+        #http://api.wunderground.com/api/7d65568686ff9c25/features/settings/q/query.format
+        # Features = alerts/almanac/astromony/conditions/forecast/hourly/hourly10day etc.
+        # settings(optional) = lang, pws(personal weather stations):0 or 1
+        # query = location (ST/City, zipcode,Country/City, or lat,long)
+        # format = json or xml
+        request = 'http://api.wunderground.com/api/'+_WU_API_KEY
+        request += "/hourly10day"
+        request += "/q/"+ location.strip(' /')
+        request += ".json"
+        return request
 
 
 
 
 if __name__ == '__main__':
+    print (Forecast.gen_fct_key(10,1,10))
+    print (Forecast.find_weather("AR/Bentonville",forecast_date=datetime.date.today(),time_of_day=date.time.now()))
     unittest.main(verbosity=0)

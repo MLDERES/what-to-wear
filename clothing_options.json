@@ -81,7 +81,6 @@
         "cold":
             { 
                 "head":"warm hat",
-                "face":"balaclava",
                 "upper_body":"",
                 "arms":"",
                 "hands":"",
@@ -91,7 +90,7 @@
             },    
         "cool":
             {
-                "head":"skullcap or earcovers",
+                "head":["skullcap", "earcovers"],
                 "upper_body":"",
                 "arms":"",
                 "hands":"",
@@ -101,7 +100,7 @@
             },  
         "mild":
             {
-                "head":"skullcap or ear",
+                "head":["skullcap","ear"],
                 "upper_body":"",
                 "arms":"",
                 "hands":"",
